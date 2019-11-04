@@ -166,4 +166,85 @@ importance(rfmodel)
 
 2. Attempt a feature selection method not covered in this tutorial (backward elimination, forward propogation, etc.)
 
+```{r setup, include=FALSE}
+# Loading libraries
+library(mlbench)
+```
+
+```{r Question 1, load data}
+# load data
+data(Glass)
+
+# Check variable types
+str(Glass)
+
+# Confirm that there are no Na values
+sum(is.na(Glass))
+```
+
+
+```{r Wrapper, Question 1}
+# Question 1
+# wrapper method
+
+# define control 
+control = rfeControl(functions = caretFuncs, number = 2)
+
+# Change outcome variables from numbers to letters to accomodate RFE algorithm requirements
+levels(Glass[,10]) <- c("one", "two", "three", "five", "six", "seven")
+
+# recursive feature selection algorithm
+set.seed <- 5
+results <- rfe(Glass[,1:9], Glass[,10], sizes = c(2,5,6,9), rfeControl = control, method = "svmRadial")
+
+results
+results$variables
+```
+
+```{r Embedded method and summary, Question 1}
+# random forest
+
+# make training and test sets
+train_size <- floor(0.75 * nrow(Glass))
+set.seed(15)
+train_pos <- sample(seq_len(nrow(Glass)), size = train_size)
+
+train_classification <- Glass[train_pos, ]
+test_classification <- Glass[-train_pos, ]
+
+#fit model
+rfmodel = randomForest(Type ~ ., data=train_classification,  importance = TRUE, oob.times = 15, confusion = TRUE)
+
+#rank features based on importance 
+importance(rfmodel, type=2)
+
+# visualizing feature importance 
+varImpPlot(rfmodel, type=2, main = "Variable Importance Plot")
+
+# Summary
+
+# Overall, these methods did produce similar results. Random forest selected Mg, Al, RI, Ca and Na to be the top 5 most important variables, while recursive feature selection chose the top five variables to be Mg, Al, Na, K, and Ca. Only the variables RI and K did not overlap; however, K was the sixth most important variable according to the random forest model. 
+```
+```{r Genetic algorithm, Question 2}
+# Genetic algorithm
+
+# Set training and test sets
+set.seed(10)
+train_size_gen <- floor(0.75 * nrow(Glass))
+train_pos_gen <- sample(seq_len(nrow(Glass)), size = train_size)
+
+train_classification_gen <- Glass[train_pos_gen, ]
+test_classification_gen <- Glass[-train_pos_gen, ]
+
+# define control 
+control <- gafsControl(functions = caretGA, genParallel=TRUE, allowParallel=TRUE,)
+
+# genetic algorithm
+results_gafs <- gafs(train_classification_gen[,1:9], train_classification_gen[,10], iters = 5, gafsControl = control, method = "svmRadial")
+
+results_gafs
+results_gafs$variables
+
+plot(results_gafs)
+```
 
