@@ -158,8 +158,6 @@ importance(rfmodel)
 
 ```
 
-
-
 ## Homework
 
 1. Compare the most important features from at least 2 different classes of feature selection methods covered in this tutorial with any reasonable machine learning dataset from mlbench. Do these feature selection methods provide similar results? 
@@ -225,6 +223,7 @@ varImpPlot(rfmodel, type=2, main = "Variable Importance Plot")
 
 # Overall, these methods did produce similar results. Random forest selected Mg, Al, RI, Ca and Na to be the top 5 most important variables, while recursive feature selection chose the top five variables to be Mg, Al, Na, K, and Ca. Only the variables RI and K did not overlap; however, K was the sixth most important variable according to the random forest model. 
 ```
+
 ```{r Genetic algorithm, Question 2}
 # Genetic algorithm
 
